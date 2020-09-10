@@ -1,0 +1,1 @@
+1.in cmd line -> run 'ruby src/main.rb'

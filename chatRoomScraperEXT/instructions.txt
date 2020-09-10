@@ -1,0 +1,6 @@
+1. Top right corner on google chrome -> click 'Extensions'
+2. In Context Menu -> click 'Manage Extensions'
+3. Top left corner -> click  'Load Unpacked'
+4. Load 'chatRoomScraperEXT' directory
+
+* Extension will automatically start once the chat room domain site is visited in any tab
