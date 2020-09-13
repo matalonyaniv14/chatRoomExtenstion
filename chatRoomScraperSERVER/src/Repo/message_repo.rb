@@ -21,7 +21,7 @@ class MessageRepo
                 m[:timestamp] = DateTime.now.to_time.to_s
                 message = Message.new(m)
                 if message._valid?
-                    @messages << message
+                    @messages _<< message
                     csv << message.to_csv
                 end 
             end 
@@ -32,13 +32,20 @@ class MessageRepo
 
     private
 
+    def _<<(other)
+        difference = self.size - 100
+        self.shift(difference) if difference > 0
+        self.push(other)
+
+        return self    
+    end 
 
     def load_messages
         data = CSV.read(MESSAGE_FILE, CSV_OPTIONS)
         if data 
              messages = data.size <= 100 ? data : data[(data.size - 100)..-1]
              message_objects = []
-             messages =  messages.each do |m|
+             messages.each do |m|
                 message = Message.new(m.to_h) rescue next
                 if message._valid?  
                     message_objects << message

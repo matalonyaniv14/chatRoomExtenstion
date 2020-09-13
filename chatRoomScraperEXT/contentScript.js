@@ -59,8 +59,8 @@ const isLast = ( ind, array ) => {
 
 const findIndexOf = ( message, messageList ) => {
     return messageList.findIndex( ( m ) => {
-         return m.author === message.author && 
-                m.content === message.content
+         return m.author === message?.author && 
+                m.content === message?.content
      })
  }
 
