@@ -3,7 +3,7 @@ require 'json'
 require_relative '../Models/message.rb'
 
 CSV_OPTIONS  = {headers: true, header_converters: :symbol } 
-MESSAGE_FILE = 'src/data/chat_room_data.csv'
+MESSAGE_FILE = 'chatRoomScraperSERVER/src/data/chat_room_data.csv'
 
 class MessageRepo 
     def initialize()
@@ -21,7 +21,7 @@ class MessageRepo
                 m[:timestamp] = DateTime.now.to_time.to_s
                 message = Message.new(m)
                 if message._valid?
-                    @messages _<< message
+                    self.safe_push(@messages, message)
                     csv << message.to_csv
                 end 
             end 
@@ -29,16 +29,16 @@ class MessageRepo
     end 
 
 
+    def safe_push(array, other)
+        difference = array.size - 100
+        array.shift(difference) if difference > 0
+        array.push(other)
+
+        return array   
+    end 
 
     private
 
-    def _<<(other)
-        difference = self.size - 100
-        self.shift(difference) if difference > 0
-        self.push(other)
-
-        return self    
-    end 
 
     def load_messages
         data = CSV.read(MESSAGE_FILE, CSV_OPTIONS)

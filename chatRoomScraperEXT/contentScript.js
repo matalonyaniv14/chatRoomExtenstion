@@ -1,3 +1,4 @@
+console.log('starting.');
 
 const BASE_URL = "http://localhost:3001";
 const MESSAGE_ATTRIBUTE = '.line-layout-row .line-layout-row__username';
