@@ -1,60 +1,72 @@
-require 'csv'
-require 'json'
-require_relative '../Models/message.rb'
+require "csv"
+require "json"
+require "byebug"
+require_relative "../Models/message.rb"
 
-CSV_OPTIONS  = {headers: true, header_converters: :symbol } 
-MESSAGE_FILE = 'chatRoomScraperSERVER/src/data/chat_room_data.csv'
+class MessageRepo
+  CSV_OPTIONS = { headers: true, header_converters: :symbol, col_sep: ";" }
 
-class MessageRepo 
-    def initialize()
-        @messages = load_messages
-    end 
+  def initialize(path)
+    @path = path
+    @messages = load_messages
+  end
 
+  def last
+    @messages.size.zero? ? [{}] : @messages.last.attributes
+  end
 
-    def last
-        @messages.size.zero?  ?  [{}] :  @messages.last.attributes
-    end 
+  def update(messages)
+    new_messages = []
+    CSV.open(@path, "a+", col_sep: ";") do |csv|
+      messages.each do |m|
+        message = Message.build(m)
+        next if message_exists?(message)
 
-    def update(messages)
-        CSV.open(MESSAGE_FILE, 'a+') do |csv|
-            messages.each do |m|
-                m[:timestamp] = DateTime.now.to_time.to_s
-                message = Message.new(m)
-                if message._valid?
-                    self.safe_push(@messages, message)
-                    csv << message.to_csv
-                end 
-            end 
-        end 
-    end 
+        if message._valid?
+          self.safe_push(@messages, message)
+          csv << message.to_csv
+          new_messages << message
+        end
+      end
+    end
 
+    return new_messages
+  end
 
-    def safe_push(array, other)
-        difference = array.size - 100
-        array.shift(difference) if difference > 0
-        array.push(other)
+  def find(message)
+    @messages.select do |m|
+      m.author =~ /^#{message.author}$/ &&
+      m.content =~ /^#{message.content}$/
+    end
+  end
 
-        return array   
-    end 
+  def message_exists?(message)
+    !self.find(message).size.zero?
+  end
 
-    private
+  def safe_push(array, other)
+    difference = array.size - 100
+    array.shift(difference) if difference > 0
+    array.push(other)
 
+    return array
+  end
 
-    def load_messages
-        data = CSV.read(MESSAGE_FILE, CSV_OPTIONS)
-        if data 
-             messages = data.size <= 100 ? data : data[(data.size - 100)..-1]
-             message_objects = []
-             messages.each do |m|
-                message = Message.new(m.to_h) rescue next
-                if message._valid?  
-                    message_objects << message
-                end 
-             end 
+  private
 
-             return message_objects
-        end  
+  def load_messages
+    data = CSV.read(@path, CSV_OPTIONS)
+    if data
+      messages = data.size <= 100 ? data : data[(data.size - 100)..-1]
+      message_objects = []
+      messages.each do |m|
+        message = Message.new(m.to_h) rescue next
+        if message._valid?
+          message_objects << message
+        end
+      end
 
-        return []
-    end 
-end 
+      return message_objects
+    end
+  end
+end
