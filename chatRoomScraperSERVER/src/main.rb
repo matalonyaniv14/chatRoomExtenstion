@@ -3,7 +3,7 @@ require "sinatra/cross_origin"
 require "json"
 require_relative "Repo/message_repo.rb"
 
-csv_path = File.join(__dir__, "/data/chat_room_data.csv")
+csv_path = File.join(__dir__, "/data/chat_room_data_smarter.csv")
 message_repo = MessageRepo.new(csv_path)
 p message_repo
 set :port, 3001
@@ -27,6 +27,7 @@ put "/chatroom-data-upload" do
   new_messages = message_repo.update(messages)
   #   new messages => [Message]
   p new_messages
+
   { ok: true }.to_json
 
   puts "Total time to update => #{Time.now - start_time}"

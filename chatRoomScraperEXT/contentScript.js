@@ -71,9 +71,9 @@ const findIndexOf = (message, messageList) => {
 
 // looks through DOM for all chat messages
 // returns: [{ author: string, content: string }] | []
-
+// CHANGEDCHANGEDCHANGEDCHANGEDCHANGEDCHANGEDCHANGEDCHANGEDCHANGEDCHANGEDCHANGEDCHANGEDCHANGED
 const takeMessages = () => {
-  let messages = [...document.querySelectorAll(MESSAGE_ATTRIBUTE)];
+  let messages = [...document.querySelector('iframe').contentWindow.document.querySelectorAll(MESSAGE_ATTRIBUTE)];
   if (messages) {
     return messages.reduce((acc, author) => {
       let content = author.nextElementSibling;
